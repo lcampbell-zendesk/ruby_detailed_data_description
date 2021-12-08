@@ -101,12 +101,9 @@ module FieldTypes
 
     def valid?(row)
       value = row[@name]
+
       unless @type.valid?(value)
-        # pp row
-        # puts @type
-        # pp @name
-        # raise "invalid NamedField"
-        puts "#{@name} : #{value}"
+        raise "invalid NamedField #{@name} : #{value}"
       end
 
       true
