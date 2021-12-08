@@ -101,8 +101,6 @@ module FieldTypes
     string(name)
   end
 
-  private
-
   module UnparsedField
     def parse(value)
       value
