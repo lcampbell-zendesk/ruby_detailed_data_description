@@ -41,6 +41,10 @@ class DataSet
 end
 
 module FieldTypes
+  def optional(name, type)
+    NamedField.new(name, OptionalField.new(type))
+  end
+
   def string(name)
     NamedField.new(name, StringField.new)
   end
@@ -163,17 +167,17 @@ TICKET_FIELDS = [
   url('url'),
   uuid('external_id'),
   date('created_at'),
-  NamedField.new('type', OptionalField.new(StringField.new)), # enum(['incident'])
+  optional('type', StringField.new), # enum(['incident'])
   string('subject'),
-  NamedField.new('description', OptionalField.new(StringField.new)),
+  optional('description', StringField.new),
   enum('priority', ['high']),
   enum('status', ['pending']),
   int('submitter_id'),
-  NamedField.new('assignee_id', OptionalField.new(IntField.new)), # reference
-  NamedField.new('organization_id', OptionalField.new(IntField.new)), # reference
+  optional('assignee_id', IntField.new), # reference
+  optional('organization_id', IntField.new), # reference
   array_of_strings('tags'),
   boolean('has_incidents'),
-  NamedField.new('due_at', OptionalField.new(StringField.new)), # date
+  optional('due_at', StringField.new), # date
   enum('via', ['web'])
 ]
 
@@ -182,18 +186,18 @@ USER_FIELDS = [
   url('url'),
   uuid('external_id'),
   string('name'),
-  string('alias'),
+  optional('alias', StringField.new),
   date('created_at'),
   boolean('active'),
-  boolean('verified'),
+  optional('verified', BooleanField.new),
   boolean('shared'),
-  enum('locale', ['en-AU']),
-  string('timezone'),
+  optional('locale', StringField.new), # enum('locale', ['en-AU']),
+  optional('timezone', StringField.new),
   date('last_login_at'),
-  email('email'),
+  optional('email', StringField.new), # email
   phone('phone'),
   string('signature'),
-  int('organization_id'),
+  optional('organization_id', IntField.new), # reference
   array_of_strings('tags'),
   boolean('suspended'),
   enum('role', ['admin'])
@@ -212,5 +216,5 @@ ORGANIZATION_FIELDS = [
 ]
 
 TICKETS = DataSource.new('tickets', TICKET_FIELDS, 'data/tickets.json').execute
-USERS = DataSource.new('users', USER_FIELDS, 'data/users.json')
-ORGANIZATIONS = DataSource.new('organizations', ORGANIZATION_FIELDS, 'data/organizations.json')
+USERS = DataSource.new('users', USER_FIELDS, 'data/users.json').execute
+ORGANIZATIONS = DataSource.new('organizations', ORGANIZATION_FIELDS, 'data/organizations.json').execute
