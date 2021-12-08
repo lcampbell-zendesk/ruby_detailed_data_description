@@ -1,15 +1,42 @@
 require 'json'
 require 'pp'
 
-class Dataset
-  def initialize(name, path, fields)
+class DataSource
+  def initialize(name, fields, path)
     @name = name
-    @path = path
     @fields = fields
+    @path = path
   end
+
+  # Bad name
+  def execute
+    data = load
+    if valid?(data)
+      DataSet.new(@name, @fields, data)
+    else
+      raise "invalid data"
+    end
+  end
+
+  private
 
   def load
     JSON.parse(open(@path).read)
+  end
+
+  def valid?(data)
+    raise "datasource must be an array" unless data.is_a?(Array)
+
+    data.all? do |row|
+      @fields.all? do |field|
+        field.valid?(row)
+      end
+    end
+  end
+end
+
+class DataSet
+  def initialize(name, fields, data)
   end
 end
 
@@ -56,16 +83,9 @@ module FieldTypes
 
   private
 
-  class NamedField
-    def initialize(name, type)
-      @name = name
-      @type = type
-    end
-  end
-
   class AbstractField
-    def validate
-      raise :not_implemented
+    def valid?(value)
+      raise "not implemented"
     end
 
     def parse(value)
@@ -73,20 +93,52 @@ module FieldTypes
     end
   end
 
+  class NamedField
+    def initialize(name, type)
+      @name = name
+      @type = type
+    end
+
+    def valid?(row)
+      unless @type.valid?(row[@name])
+        pp row
+        puts @type
+        pp @name
+        raise "invalid NamedField"
+      end
+
+      true
+    end
+
+    def parse(row)
+      {@name => @type.parse(row[@name])}
+    end
+  end
+
+  class OptionalField < AbstractField
+    def initialize(type)
+      @type = type
+    end
+
+    def valid?(value)
+      value.nil? || @type.valid?(value)
+    end
+  end
+
   class StringField < AbstractField
-    def validate(value)
+    def valid?(value)
       value.is_a?(String)
     end
   end
 
   class IntField < AbstractField
-    def validate(value)
+    def valid?(value)
       value.is_a?(Integer)
     end
   end
 
   class BooleanField < AbstractField
-    def validate(value)
+    def valid?(value)
       [true, false].include?(value)
     end
   end
@@ -96,9 +148,9 @@ module FieldTypes
       @type = type
     end
 
-    def validate(value)
+    def valid?(value)
       value.is_a?(Array) &&
-        value.all?{|v| @type.validate(v) }
+        value.all?{|v| @type.valid?(v) }
     end
   end
 
@@ -111,17 +163,17 @@ TICKET_FIELDS = [
   url('url'),
   uuid('external_id'),
   date('created_at'),
-  enum('type', ['incident']),
+  NamedField.new('type', OptionalField.new(StringField.new)), # enum(['incident'])
   string('subject'),
-  string('description'),
+  NamedField.new('description', OptionalField.new(StringField.new)),
   enum('priority', ['high']),
   enum('status', ['pending']),
   int('submitter_id'),
-  int('assignee_id'),
-  int('organization_id'),
+  NamedField.new('assignee_id', OptionalField.new(IntField.new)), # reference
+  NamedField.new('organization_id', OptionalField.new(IntField.new)), # reference
   array_of_strings('tags'),
   boolean('has_incidents'),
-  date('due_at'),
+  NamedField.new('due_at', OptionalField.new(StringField.new)), # date
   enum('via', ['web'])
 ]
 
@@ -159,6 +211,6 @@ ORGANIZATION_FIELDS = [
   array_of_strings('tags')
 ]
 
-TICKETS = Dataset.new('tickets', 'data/tickets.json', TICKET_FIELDS)
-USERS = Dataset.new('users', 'data/users.json', USER_FIELDS)
-ORGANIZATIONS = Dataset.new('organizations', 'data/organizations.json', ORGANIZATION_FIELDS)
+TICKETS = DataSource.new('tickets', TICKET_FIELDS, 'data/tickets.json').execute
+USERS = DataSource.new('users', USER_FIELDS, 'data/users.json')
+ORGANIZATIONS = DataSource.new('organizations', ORGANIZATION_FIELDS, 'data/organizations.json')
