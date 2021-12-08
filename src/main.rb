@@ -78,7 +78,7 @@ module FieldTypes
   end
 
   def email(name)
-    string(name)
+    NamedField.new(name, EmailField.new)
   end
 
   def phone(name)
@@ -173,7 +173,14 @@ module FieldTypes
     def valid?(value)
       @acceptable_values.include?(value)
     end
+  end
 
+  class EmailField
+    include UnparsedField
+
+    def valid?(value)
+      URI::MailTo::EMAIL_REGEXP.match?(value)
+    end
   end
 
 end
@@ -212,7 +219,7 @@ USER_FIELDS = [
   optional('locale', EnumField.new(['en-AU', 'zh-CN', 'de-CH'])),
   optional('timezone', StringField.new),
   date('last_login_at'),
-  optional('email', StringField.new), # email
+  optional('email', EmailField.new),
   phone('phone'),
   string('signature'),
   optional('organization_id', IntField.new), # reference
