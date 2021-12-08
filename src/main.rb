@@ -74,7 +74,7 @@ module FieldTypes
   end
 
   def enum(name, values)
-    string(name)
+    NamedField.new(name, EnumField.new(values))
   end
 
   def email(name)
@@ -87,11 +87,7 @@ module FieldTypes
 
   private
 
-  class AbstractField
-    def valid?(value)
-      raise "not implemented"
-    end
-
+  module UnparsedField
     def parse(value)
       value
     end
@@ -104,11 +100,13 @@ module FieldTypes
     end
 
     def valid?(row)
-      unless @type.valid?(row[@name])
-        pp row
-        puts @type
-        pp @name
-        raise "invalid NamedField"
+      value = row[@name]
+      unless @type.valid?(value)
+        # pp row
+        # puts @type
+        # pp @name
+        # raise "invalid NamedField"
+        puts "#{@name} : #{value}"
       end
 
       true
@@ -119,7 +117,9 @@ module FieldTypes
     end
   end
 
-  class OptionalField < AbstractField
+  class OptionalField
+    include UnparsedField
+
     def initialize(type)
       @type = type
     end
@@ -129,25 +129,33 @@ module FieldTypes
     end
   end
 
-  class StringField < AbstractField
+  class StringField
+    include UnparsedField
+
     def valid?(value)
       value.is_a?(String)
     end
   end
 
-  class IntField < AbstractField
+  class IntField
+    include UnparsedField
+
     def valid?(value)
       value.is_a?(Integer)
     end
   end
 
-  class BooleanField < AbstractField
+  class BooleanField
+    include UnparsedField
+
     def valid?(value)
       [true, false].include?(value)
     end
   end
 
-  class ArrayField < AbstractField
+  class ArrayField
+    include UnparsedField
+
     def initialize(type)
       @type = type
     end
@@ -156,6 +164,19 @@ module FieldTypes
       value.is_a?(Array) &&
         value.all?{|v| @type.valid?(v) }
     end
+  end
+
+  class EnumField
+    include UnparsedField
+
+    def initialize(acceptable_values)
+      @acceptable_values = acceptable_values
+    end
+
+    def valid?(value)
+      @acceptable_values.include?(value)
+    end
+
   end
 
 end
@@ -167,18 +188,18 @@ TICKET_FIELDS = [
   url('url'),
   uuid('external_id'),
   date('created_at'),
-  optional('type', StringField.new), # enum(['incident'])
+  optional('type', EnumField.new(['incident', 'problem', 'task', 'question'])),
   string('subject'),
   optional('description', StringField.new),
-  enum('priority', ['high']),
-  enum('status', ['pending']),
+  enum('priority', ['high', 'low', 'normal', 'urgent']),
+  enum('status', ['pending', 'hold', 'closed', 'solved', 'open']),
   int('submitter_id'),
   optional('assignee_id', IntField.new), # reference
   optional('organization_id', IntField.new), # reference
   array_of_strings('tags'),
   boolean('has_incidents'),
   optional('due_at', StringField.new), # date
-  enum('via', ['web'])
+  enum('via', ['web', 'chat', 'voice'])
 ]
 
 USER_FIELDS = [
@@ -191,7 +212,7 @@ USER_FIELDS = [
   boolean('active'),
   optional('verified', BooleanField.new),
   boolean('shared'),
-  optional('locale', StringField.new), # enum('locale', ['en-AU']),
+  optional('locale', EnumField.new(['en-AU', 'zh-CN', 'de-CH'])),
   optional('timezone', StringField.new),
   date('last_login_at'),
   optional('email', StringField.new), # email
@@ -200,7 +221,7 @@ USER_FIELDS = [
   optional('organization_id', IntField.new), # reference
   array_of_strings('tags'),
   boolean('suspended'),
-  enum('role', ['admin'])
+  enum('role', ['admin', 'agent', 'end-user'])
 ]
 
 ORGANIZATION_FIELDS = [
