@@ -8,8 +8,7 @@ class DataSource
     @path = path
   end
 
-  # Bad name
-  def execute
+  def load_into_table
     data = load
     if valid?(data)
       Table.new(@name, @fields, data)
@@ -56,6 +55,10 @@ module FieldTypes
 
   def optional(name, type)
     named(name, OptionalField.new(type))
+  end
+
+  def id(name, type)
+    named(name, IdField.new(type))
   end
 
   def string(name)
@@ -163,6 +166,15 @@ module FieldTypes
     end
   end
 
+  class UUIDField
+    include UnparsedField
+    UUIDPattern = /[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}/
+
+    def valid?(value)
+      UUIDPattern.match?(value)
+    end
+  end
+
   class ArrayField
     include UnparsedField
 
@@ -231,7 +243,7 @@ end
 include FieldTypes
 
 TICKET_FIELDS = [
-  named('_id', IdField.new(StringField.new)),
+  id('_id', UUIDField.new),
   url('url'),
   uuid('external_id'),
   date('created_at'),
@@ -250,7 +262,7 @@ TICKET_FIELDS = [
 ]
 
 USER_FIELDS = [
-  named('_id', IdField.new(IntField.new)),
+  id('_id', IntField.new),
   url('url'),
   uuid('external_id'),
   string('name'),
@@ -272,7 +284,7 @@ USER_FIELDS = [
 ]
 
 ORGANIZATION_FIELDS = [
-  named('_id', IdField.new(IntField.new)),
+  id('_id', IntField.new),
   url('url'),
   uuid('external_id'),
   string('name'),
