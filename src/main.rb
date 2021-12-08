@@ -197,10 +197,9 @@ module FieldTypes
   end
 
   class ReferenceField
-    def initialize(name, join_table, join_field, type)
+    def initialize(name, join_table, type)
       @name = name
       @join_table = join_table
-      @join_field = join_field
       @type = type
     end
 
@@ -242,8 +241,8 @@ TICKET_FIELDS = [
   enum('priority', ['high', 'low', 'normal', 'urgent']),
   enum('status', ['pending', 'hold', 'closed', 'solved', 'open']),
   int('submitter_id'),
-  optional('assignee_id', ReferenceField.new('assignee', 'users', '_id', IntField.new)),
-  optional('organization_id', ReferenceField.new('organization', 'organizations', '_id', IntField.new)),
+  optional('assignee_id', ReferenceField.new('assignee', 'users', IntField.new)),
+  optional('organization_id', ReferenceField.new('organization', 'organizations', IntField.new)),
   array_of_strings('tags'),
   boolean('has_incidents'),
   optional('due_at', StringField.new), # date
@@ -266,7 +265,7 @@ USER_FIELDS = [
   optional('email', EmailField.new),
   phone('phone'),
   string('signature'),
-  optional('organization_id', ReferenceField.new('organization', 'organizations', '_id', IntField.new)),
+  optional('organization_id', ReferenceField.new('organization', 'organizations', IntField.new)),
   array_of_strings('tags'),
   boolean('suspended'),
   enum('role', ['admin', 'agent', 'end-user'])
