@@ -50,24 +50,28 @@ class Database
 end
 
 module FieldTypes
+  def named(name, type)
+    NamedField.new(name, type)
+  end
+
   def optional(name, type)
-    NamedField.new(name, OptionalField.new(type))
+    named(name, OptionalField.new(type))
   end
 
   def string(name)
-    NamedField.new(name, StringField.new)
+    named(name, StringField.new)
   end
 
   def int(name)
-    NamedField.new(name, IntField.new)
+    named(name, IntField.new)
   end
 
   def boolean(name)
-    NamedField.new(name, BooleanField.new)
+    named(name, BooleanField.new)
   end
 
   def array_of_strings(name)
-    NamedField.new(name, ArrayField.new(StringField.new))
+    named(name, ArrayField.new(StringField.new))
   end
 
   def uuid(name)
@@ -83,11 +87,11 @@ module FieldTypes
   end
 
   def enum(name, values)
-    NamedField.new(name, EnumField.new(values))
+    named(name, EnumField.new(values))
   end
 
   def email(name)
-    NamedField.new(name, EmailField.new)
+    named(name, EmailField.new)
   end
 
   def phone(name)
@@ -193,8 +197,6 @@ module FieldTypes
   end
 
   class ReferenceField
-    include UnparsedField
-
     def initialize(name, join_table, join_field, type)
       @name = name
       @join_table = join_table
@@ -205,6 +207,24 @@ module FieldTypes
     def valid?(value)
       @type.valid?(value)
     end
+
+    def parse(value)
+      @type.parse(value)
+    end
+  end
+
+  class IdField
+    def initialize(type)
+      @type = type
+    end
+
+    def valid?(value)
+      @type.valid?(value)
+    end
+
+    def parse(value)
+      @type.parse(value)
+    end
   end
 
 end
@@ -212,7 +232,7 @@ end
 include FieldTypes
 
 TICKET_FIELDS = [
-  uuid( '_id'),
+  named('_id', IdField.new(StringField.new)),
   url('url'),
   uuid('external_id'),
   date('created_at'),
@@ -231,7 +251,7 @@ TICKET_FIELDS = [
 ]
 
 USER_FIELDS = [
-  int('_id'),
+  named('_id', IdField.new(IntField.new)),
   url('url'),
   uuid('external_id'),
   string('name'),
@@ -253,7 +273,7 @@ USER_FIELDS = [
 ]
 
 ORGANIZATION_FIELDS = [
-  int('_id'),
+  named('_id', IdField.new(IntField.new)),
   url('url'),
   uuid('external_id'),
   string('name'),
