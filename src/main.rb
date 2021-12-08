@@ -12,7 +12,7 @@ class DataSource
   def execute
     data = load
     if valid?(data)
-      DataSet.new(@name, @fields, data)
+      Table.new(@name, @fields, data)
     else
       raise "invalid data"
     end
@@ -35,8 +35,17 @@ class DataSource
   end
 end
 
-class DataSet
+class Table
   def initialize(name, fields, data)
+    @name = name
+    @fields = fields
+    @data = data
+  end
+end
+
+class Database
+  def initialize(tables)
+    @tables = tables
   end
 end
 
@@ -183,6 +192,21 @@ module FieldTypes
     end
   end
 
+  class ReferenceField
+    include UnparsedField
+
+    def initialize(name, join_table, join_field, type)
+      @name = name
+      @join_table = join_table
+      @join_field = join_field
+      @type = type
+    end
+
+    def valid?(value)
+      @type.valid?(value)
+    end
+  end
+
 end
 
 include FieldTypes
@@ -198,8 +222,8 @@ TICKET_FIELDS = [
   enum('priority', ['high', 'low', 'normal', 'urgent']),
   enum('status', ['pending', 'hold', 'closed', 'solved', 'open']),
   int('submitter_id'),
-  optional('assignee_id', IntField.new), # reference
-  optional('organization_id', IntField.new), # reference
+  optional('assignee_id', ReferenceField.new('assignee', 'users', '_id', IntField.new)),
+  optional('organization_id', ReferenceField.new('organization', 'organizations', '_id', IntField.new)),
   array_of_strings('tags'),
   boolean('has_incidents'),
   optional('due_at', StringField.new), # date
@@ -222,7 +246,7 @@ USER_FIELDS = [
   optional('email', EmailField.new),
   phone('phone'),
   string('signature'),
-  optional('organization_id', IntField.new), # reference
+  optional('organization_id', ReferenceField.new('organization', 'organizations', '_id', IntField.new)),
   array_of_strings('tags'),
   boolean('suspended'),
   enum('role', ['admin', 'agent', 'end-user'])
@@ -243,3 +267,5 @@ ORGANIZATION_FIELDS = [
 TICKETS = DataSource.new('tickets', TICKET_FIELDS, 'data/tickets.json').execute
 USERS = DataSource.new('users', USER_FIELDS, 'data/users.json').execute
 ORGANIZATIONS = DataSource.new('organizations', ORGANIZATION_FIELDS, 'data/organizations.json').execute
+
+DATABASE = Database.new([TICKETS, USERS, ORGANIZATIONS])
