@@ -1,6 +1,6 @@
 module FieldTypes
   def uuid(name)
-    string(name)
+    named(name, UUIDField.new)
   end
 
   class UUIDField
