@@ -20,7 +20,7 @@ module Schema
     optional('organization_id', ReferenceField.new('organization', 'organizations', IntField.new)),
     array_of_strings('tags'),
     boolean('has_incidents'),
-    optional('due_at', StringField.new), # date
+    optional('due_at', DateField.new), # date
     enum('via', ['web', 'chat', 'voice'])
   ]
 

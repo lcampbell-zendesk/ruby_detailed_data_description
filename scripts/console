@@ -1,3 +1,5 @@
 #!/usr/bin/env bash
 
-irb -I 'src'
+irb \
+    -I 'src' \
+    -r 'main'

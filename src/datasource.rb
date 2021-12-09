@@ -11,7 +11,7 @@ class DataSource
   def load_into_table
     data = load
     if valid?(data)
-      Table.new(@name, @fields, data)
+      Table.new(@name, @fields, parse(data))
     else
       raise "invalid data"
     end
@@ -30,6 +30,14 @@ class DataSource
       @fields.all? do |field|
         field.valid?(row)
       end
+    end
+  end
+
+  def parse(data)
+    data.map do |row|
+      @fields.map do |field|
+        field.parse(row)
+      end.reduce(&:merge)
     end
   end
 end
