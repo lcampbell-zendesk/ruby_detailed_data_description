@@ -1,7 +1,7 @@
-require "schema"
-require "datasource"
-require "table"
-require "database"
+require 'schema'
+require 'datasource'
+require 'table'
+require 'database'
 
 module Main
   include Schema
@@ -12,3 +12,7 @@ module Main
 
   DATABASE = Database.new([TICKETS, USERS, ORGANIZATIONS])
 end
+
+require 'pp'
+
+pp Main::DATABASE.search('tickets', 'priority', 'high').length
