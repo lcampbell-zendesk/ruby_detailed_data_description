@@ -1,12 +1,18 @@
 class Database
   def initialize(tables)
-    @tables = tables.reduce({}) do |accumulator, table|
-      accumulator[table.name] = table
-      accumulator
-    end
+    @tables = keyed_by_name(tables)
   end
 
   def search(table, field, value)
     @tables[table].search(field, value)
+  end
+
+  private
+
+  def keyed_by_name(tables)
+    tables.reduce({}) do |accumulator, table|
+      accumulator[table.name] = table
+      accumulator
+    end
   end
 end
