@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+bundle install \
+    --binstubs vendor/bin \
+    --path vendor/bundle
+
+bundle exec guard init test
