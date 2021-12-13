@@ -15,4 +15,3 @@ end
 
 require 'pp'
 
-pp Main::DATABASE.search('tickets', 'priority', 'high').length
