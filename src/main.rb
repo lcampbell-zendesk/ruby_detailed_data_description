@@ -1,7 +1,8 @@
 require 'schema'
-require 'datasource'
-require 'table'
-require 'database'
+
+require 'db/datasource'
+require 'db/table'
+require 'db/database'
 
 module Main
   include Schema
@@ -12,6 +13,3 @@ module Main
 
   DATABASE = Database.new([TICKETS, USERS, ORGANIZATIONS])
 end
-
-require 'pp'
-

@@ -1,5 +1,5 @@
-require "field_types/all"
-require "field_types/id"
+require "db/field_types/all"
+require "db/field_types/id"
 
 module Schema
   include FieldTypes

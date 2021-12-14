@@ -1,5 +1,5 @@
 require "json"
-require "table"
+require "db/table"
 
 class DataSource
   def initialize(name, fields, path)
