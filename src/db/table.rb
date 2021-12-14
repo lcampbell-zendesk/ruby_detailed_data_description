@@ -12,4 +12,8 @@ class Table
       row[field] == value
     end
   end
+
+  def field_names
+    @fields.map(&:name)
+  end
 end

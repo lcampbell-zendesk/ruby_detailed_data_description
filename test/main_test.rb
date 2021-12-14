@@ -3,7 +3,6 @@ require 'main'
 
 class MainTest < Test::Unit::TestCase
   def setup
-    puts "running setup"
   end
 
   def test_ticket_priority_search

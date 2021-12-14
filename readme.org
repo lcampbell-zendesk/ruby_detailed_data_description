@@ -1,0 +1,15 @@
+# Search - Detailed Data Scription
+
+This implementation attempts to capture all of the requirements as data. The
+hope is that this will allow all functionality to be written generically, and
+using minimal code.
+
+## Todo
+
+- [ ] Prompt the user for search terms
+- [ ] Print the results
+- [ ] Automatically index ~id~ and ~reference~ fields.
+- [ ] Include related results
+- [ ] Search for individual tags
+- [ ] Allow OR based search
+- [ ] Refactor and add tests

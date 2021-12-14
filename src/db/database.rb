@@ -7,6 +7,14 @@ class Database
     @tables[table].search(field, value)
   end
 
+  def table_names
+    @tables.keys
+  end
+
+  def table(name)
+    @tables[name]
+  end
+
   private
 
   def keyed_by_name(tables)
