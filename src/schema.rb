@@ -32,7 +32,7 @@ module Schema
     optional('alias', StringField.new),
     date('created_at'),
     boolean('active'),
-    optional('verified', BooleanField.new),
+    optional('verified', EnumField.new([true, false])),
     boolean('shared'),
     optional('locale', EnumField.new(['en-AU', 'zh-CN', 'de-CH'])),
     optional('timezone', StringField.new),

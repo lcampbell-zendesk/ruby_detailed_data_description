@@ -6,6 +6,8 @@ module FieldTypes
   class EnumField
     include UnparsedField
 
+    attr_reader :acceptable_values
+
     def initialize(acceptable_values)
       @acceptable_values = acceptable_values
     end

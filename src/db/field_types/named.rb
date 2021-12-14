@@ -3,8 +3,9 @@ module FieldTypes
     NamedField.new(name, type)
   end
 
+  # TODO: Not so happy about exposing type here
   class NamedField
-    attr_reader :name
+    attr_reader :name, :type
 
     def initialize(name, type)
       @name = name

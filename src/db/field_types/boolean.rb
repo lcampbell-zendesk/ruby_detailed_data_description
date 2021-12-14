@@ -1,13 +1,7 @@
+require 'db/field_types/enum'
+
 module FieldTypes
   def boolean(name)
-    named(name, BooleanField.new)
-  end
-
-  class BooleanField
-    include UnparsedField
-
-    def valid?(value)
-      [true, false].include?(value)
-    end
+    named(name, EnumField.new([true, false]))
   end
 end

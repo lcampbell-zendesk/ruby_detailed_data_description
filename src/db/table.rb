@@ -16,4 +16,8 @@ class Table
   def field_names
     @fields.map(&:name)
   end
+
+  def field(name)
+    @fields.find { |f| f.name == name }
+  end
 end
