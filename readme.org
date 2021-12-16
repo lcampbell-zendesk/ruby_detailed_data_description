@@ -4,7 +4,7 @@ This implementation attempts to capture all of the requirements as data. The
 hope is that this will allow all functionality to be written generically, and
 using minimal code.
 
-## Todo
+* Todo
 
 - [X] Prompt the user for search terms
 - [X] Print the results
