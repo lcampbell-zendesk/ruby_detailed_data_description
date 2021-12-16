@@ -1,5 +1,3 @@
-require 'pp'
-
 require 'schema'
 
 require 'db/datasource'
@@ -27,5 +25,7 @@ module Main
     results = DB.search(table, field, value)
 
     puts Interface::Output.format_results(results)
+  rescue Interrupt
+    puts
   end
 end

@@ -4,7 +4,6 @@ require 'interface/input'
 require 'interface/prompt'
 require 'interface/select'
 require 'interface/output'
-require 'pp'
 
 class InterfaceTest < Test::Unit::TestCase
   def setup
