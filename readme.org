@@ -13,3 +13,13 @@ using minimal code.
 - [ ] Search for individual tags
 - [ ] Allow OR based search
 - [ ] Refactor and add tests
+
+* Features
+
+- Validation of types stored as strings (Date, Enum, URL, UUID)
+- Parsing of Dates, meaning timezone aware search will work
+- JSON input that allows for explicit types
+- Select widget for all limited option choices (menus, enums, booleans). This means responses aren't free form, the select widget will continue to prompt you until you enter a valid choice. Only then will it allow the program to
+  progress.
+- Explicit id and reference types that are emmenable to indexing
+- Explicit optional fields
