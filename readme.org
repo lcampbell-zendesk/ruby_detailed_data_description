@@ -6,8 +6,8 @@ using minimal code.
 
 ## Todo
 
-- [ ] Prompt the user for search terms
-- [ ] Print the results
+- [X] Prompt the user for search terms
+- [X] Print the results
 - [ ] Automatically index ~id~ and ~reference~ fields.
 - [ ] Include related results
 - [ ] Search for individual tags
