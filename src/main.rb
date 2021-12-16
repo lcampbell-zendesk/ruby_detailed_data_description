@@ -9,13 +9,14 @@ require 'interface/output'
 
 module Main
   include Schema
+  include Interface
 
   TICKETS = DataSource.new('tickets', TICKET_FIELDS, 'data/tickets.json').load_into_table
   USERS = DataSource.new('users', USER_FIELDS, 'data/users.json').load_into_table
   ORGANIZATIONS = DataSource.new('organizations', ORGANIZATION_FIELDS, 'data/organizations.json').load_into_table
 
   DB = Database.new([TICKETS, USERS, ORGANIZATIONS])
-  PROMPT = Interface::Prompt.new(DB)
+  PROMPT = Prompt.new(DB)
 
   def self.run
     table = PROMPT.select_table.display
@@ -24,7 +25,7 @@ module Main
 
     results = DB.search(table, field, value)
 
-    puts Interface::Output.format_results(results)
+    puts Output.format_results(results)
   rescue Interrupt
     puts
   end
