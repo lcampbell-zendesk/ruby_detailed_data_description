@@ -6,7 +6,7 @@ class MainTest < Test::Unit::TestCase
   end
 
   def test_ticket_priority_search
-    results = Main::DATABASE.search('tickets', 'priority', 'high')
+    results = Main::DB.search('tickets', 'priority', 'high')
     assert_equal(64, results.length)
   end
 end

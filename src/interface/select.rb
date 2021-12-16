@@ -1,5 +1,8 @@
 module Interface
   class Select
+    # Only for ==
+    attr_reader :prompt, :options
+
     def initialize(prompt, options)
       @prompt = prompt
       @options = options
@@ -19,6 +22,11 @@ module Interface
 
     def options_string
       "One of: #{@options.join(', ')}"
+    end
+
+    def ==(other)
+      self.prompt  == other.prompt &&
+        self.options == other.options
     end
   end
 end

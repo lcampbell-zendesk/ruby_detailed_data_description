@@ -1,9 +1,13 @@
 require 'test/unit'
 require 'main'
-require 'interface'
+require 'interface/input'
+require 'interface/prompt'
+require 'interface/select'
+require 'pp'
 
 class InterfaceTest < Test::Unit::TestCase
   def setup
+    @prompt = Interface::Prompt.new(Main::DB)
   end
 
   def test_select_table
@@ -12,8 +16,7 @@ class InterfaceTest < Test::Unit::TestCase
       ['tickets', 'users', 'organizations']
     )
 
-    screen = Interface::SelectTable.new(Main::DATABASE)
-    assert_equal(expected, screen.prompt())
+    assert_equal(expected, @prompt.select_table)
   end
 
   def test_select_field
@@ -23,8 +26,7 @@ class InterfaceTest < Test::Unit::TestCase
        'created_at', 'details', 'shared_tickets', 'tags']
     )
 
-    screen = Interface::SelectField.new(Main::DATABASE, 'organizations')
-    assert_equal(expected, screen.prompt())
+    assert_equal(expected, @prompt.select_field('organizations'))
   end
 
   def test_select_bool_value
@@ -33,8 +35,7 @@ class InterfaceTest < Test::Unit::TestCase
       [true, false]
     )
 
-    screen = Interface::InputValue.new(Main::DATABASE, 'organizations', 'shared_tickets')
-    assert_equal(expected, screen.prompt())
+    assert_equal(expected, @prompt.input_value('organizations', 'shared_tickets'))
   end
 
   def test_select_optional_bool_value
@@ -43,7 +44,6 @@ class InterfaceTest < Test::Unit::TestCase
       [nil, true, false]
     )
 
-    screen = Interface::InputValue.new(Main::DATABASE, 'users', 'verified')
-    assert_equal(expected, screen.prompt())
+    assert_equal(expected, @prompt.input_value('users', 'verified'))
   end
 end
