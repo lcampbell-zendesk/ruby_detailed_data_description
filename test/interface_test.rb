@@ -3,6 +3,7 @@ require 'main'
 require 'interface/input'
 require 'interface/prompt'
 require 'interface/select'
+require 'interface/output'
 require 'pp'
 
 class InterfaceTest < Test::Unit::TestCase
@@ -45,5 +46,12 @@ class InterfaceTest < Test::Unit::TestCase
     )
 
     assert_equal(expected, @prompt.input_value('users', 'verified'))
+  end
+
+  def test_output
+    expected = "  foo: one\n" + "baaar: two"
+    data = {"foo" => "one", "baaar" => "two"}
+
+    assert_equal(expected, Interface::Output.row_as_table(data))
   end
 end

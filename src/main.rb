@@ -7,6 +7,7 @@ require 'db/table'
 require 'db/database'
 
 require 'interface/prompt'
+require 'interface/output'
 
 module Main
   include Schema
@@ -23,6 +24,8 @@ module Main
     field = PROMPT.select_field(table).display
     value = PROMPT.input_value(table, field).display
 
-    pp DB.search(table, field, value)
+    results = DB.search(table, field, value)
+
+    puts Interface::Output.format_results(results)
   end
 end
