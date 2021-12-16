@@ -25,5 +25,10 @@ module Interface
     rescue JSON::ParserError
       false
     end
+
+    def ==(other)
+      self.prompt  == other.prompt &&
+        self.field == other.field
+    end
   end
 end
